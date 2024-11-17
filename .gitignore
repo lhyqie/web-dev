@@ -1,0 +1,7 @@
+*__pycache__
+*pyc
+*sqlite
+
+.DS_Store
+
+instant-search-bar-flask-htmx/data.csv
