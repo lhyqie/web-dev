@@ -8,13 +8,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 <script src="https://unpkg.com/htmx.org@1.9.4"></script>
 <style>
-.loader {
-  display: none;
-}
-.htmx-request .loader {
-  display: block;
-}
-
 .dropbtn {
   background-color: #04AA6D;
   color: white;
@@ -87,7 +80,7 @@
       </thead>
       <tbody id="results"></tbody>
     </table>
-    <img id="spinner" class="htmx-indicator loader" src="{{ url_for('static',filename='infinite-spinner.svg') }}" />
+    <img width="200px" id="spinner" class="htmx-indicator" src="{{ url_for('static',filename='infinite-spinner.svg') }}" />
   </section>
 
   <!-- <section class="section">
