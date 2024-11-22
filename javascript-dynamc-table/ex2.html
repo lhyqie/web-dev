@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dynamic HTML Table with JavaScript</title>
+
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+      .container {
+        width: 60%;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin-top: 0;
+        text-align: center;
+      }
+
+      .input-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      #rows,
+      #columns {
+        padding: 10px;
+        font-size: 16px;
+        margin-right: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      #rows:focus,
+      #columns:focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+
+      button:hover {
+        background-color: #3e8e41;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .header-input {
+        width: 100%;
+        box-sizing: border-box;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-transform: uppercase;
+      }
+
+      #myTable {
+        margin-top: 30px;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .editable-cell {
+        background-color: #f2f2f2;
+        outline: none;
+      }
+
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dynamic Table</h1>
+      <div class="input-container">
+        <button onclick="createTable()">Add Row</button> &nbsp;&nbsp;&nbsp; <button onclick="displayData()">Display Data</button>
+      </div>
+      <table id="myTable">
+        <th><input type=""text" class="header-input" value="Column1"></th>
+        <th><input type=""text" class="header-input" value="Column2"></th>
+        <th><input type=""text" class="header-input" value="Column3"></th>
+        <th><input type=""text" class="header-input" value=""/></th>
+        <!-- Table will be dynamically generated here -->
+      </table>
+    </div>
+
+    <script>
+      var tableData = [];
+
+      function createTable() {
+        var table = document.getElementById("myTable");
+        var columns = 3;
+        var rows = 1
+
+        // Create table rows
+        for (var i = 0; i < rows; i++) {
+          var rowData = [];
+          var row = document.createElement("tr");
+          for (var j = 0; j < columns + 1; j++) {
+            var cell = document.createElement("td");
+            cell.setAttribute("contenteditable", "true");
+            cell.setAttribute("class", "editable-cell");
+            cell.addEventListener("input", updateCell);
+            if (j == columns) {
+              var delete_btn = document.createElement("input");
+              delete_btn.setAttribute("type", "button");
+              delete_btn.value = "Delete";
+              delete_btn.setAttribute("onclick", "deleteRow(" + (i + 1) + ")");
+              cell.appendChild(delete_btn);
+            }
+            rowData.push("");
+            row.appendChild(cell);
+          }
+          table.appendChild(row);
+          tableData.push(rowData);
+        }
+      }
+
+      function updateCell(event) {
+        var rowIndex = event.target.parentNode.rowIndex - 1;
+        var columnIndex = event.target.cellIndex;
+        var value = event.target.textContent.trim();
+        updateData(rowIndex, columnIndex, value);
+      }
+
+      function updateData(row, col, value) {
+        tableData[row][col] = value;
+      }
+
+      function deleteRow(row) {
+        var table = document.getElementById("myTable");
+        table.deleteRow(row);
+        tableData.splice(row, 1);
+      }
+
+      function updateRow(row) {
+        var table = document.getElementById("myTable");
+        var rowData = tableData[row];
+        var cells = table.rows[row + 1].cells;
+        for (var i = 0; i < rowData.length; i++) {
+          var value = cells[i].textContent.trim();
+          rowData[i] = value;
+        }
+      }
+
+      function displayData() {
+        console.log(tableData);
+      }
+    </script>
+  </body>
+</html>

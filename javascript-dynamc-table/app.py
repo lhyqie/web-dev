@@ -1,6 +1,5 @@
 import csv
 import os
-import time
 
 from flask import Flask, request, render_template, Blueprint
 from flask_sqlalchemy import SQLAlchemy
@@ -24,15 +23,10 @@ class Song(db.Model):
 def index():
     return render_template("index.html")
 
-@main.route("/index2")
-def index2():
-    return render_template("index2.html")
-
-
 @main.route("/search")
 def search():
     q = request.args.get("q")
-    # print(q)
+    print(q)
  
     if q:
         results = Song.query.filter(Song.title.icontains(q) | Song.performer.icontains(q)) \
@@ -40,21 +34,7 @@ def search():
     else:
         results = []
     print(len(results))
-    time.sleep(1)
     return render_template("search_results.html", results=results)
-
-@main.route("/search2")
-def search2():
-    q = request.args.get("q")
-    # print(q)
- 
-    if q:
-        results = Song.query.filter(Song.title.icontains(q) | Song.performer.icontains(q)) \
-        .order_by(Song.peak_position.asc()).order_by(Song.chart_debut.desc()).limit(100).all()
-    else:
-        results = []
-    print(len(results))
-    return render_template("search_results2.html", results=results)
 
 
 # You can run this function in the flask shell after creating the database

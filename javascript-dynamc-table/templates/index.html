@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dynamic HTML Table with JavaScript</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+      .container {
+        width: 60%;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin-top: 0;
+        text-align: center;
+      }
+
+      .input-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      #rows,
+      #columns {
+        padding: 10px;
+        font-size: 16px;
+        margin-right: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      #rows:focus,
+      #columns:focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+
+      button:hover {
+        background-color: #3e8e41;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .header-input {
+        width: 100%;
+        box-sizing: border-box;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-transform: uppercase;
+      }
+
+      #myTable {
+        margin-top: 30px;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .editable-cell {
+        background-color: #f2f2f2;
+        outline: none;
+      }
+
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      /* container */
+      .three-columns-grid {
+          display: grid;
+          grid-auto-rows: 1fr;
+          grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      /* columns */
+      .three-columns-grid > * {
+          padding:1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="font-size: 32px;">Dynamic Table</h1>
+      <div class="input-container">
+        <div class="three-columns-grid">
+          <div>
+            <input id="searchbox" style="width: 250px !important;" type="text" class="input" placeholder="Search" name="q" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#results"/>
+          </div>
+          <div>
+            <select style="width: 450px !important;" class="input" id="results">
+              <option value="a1">A1</option>
+            </select>
+          </div>
+          <div><button onclick="addRow()">Add Row</button></div>
+        </div>
+      </div>
+      <br>
+      <p> <button onclick="displayData()">Display Data</button> </p>
+      <table id="myTable">
+        <th><input type=""text" class="header-input" value="Column1"></th>
+        <th><input type=""text" class="header-input" value="Column2"></th>
+        <th><input type=""text" class="header-input" value="Column3"></th>
+        <th><input type=""text" class="header-input" value=""/></th>
+        <!-- Table will be dynamically generated here -->
+      </table>
+    </div>    
+    
+    <script>
+      var tableData = [];
+
+      function addRow() {
+        var table = document.getElementById("myTable");
+        columns = 3;
+        var rowData = [];
+        var row = document.createElement("tr");
+        for (var j = 0; j < columns + 1; j++) {
+          var cell = document.createElement("td");
+          cell.setAttribute("contenteditable", "true");
+          cell.setAttribute("class", "editable-cell");
+          cell.addEventListener("input", updateCell);
+
+          if (j == 0) {
+            cell.innerHTML = document.getElementById("searchbox").value;
+          } else if (j == 1) {
+            cell.innerHTML = document.getElementById("results").value;
+          } else if (j == columns) {
+            var delete_btn = document.createElement("input");
+            delete_btn.setAttribute("type", "button");
+            delete_btn.value = "Delete";
+            delete_btn.setAttribute("onclick", "deleteRow(" + table.rows.length + ")");
+            delete_btn.setAttribute("class", "input")
+            cell.appendChild(delete_btn);
+          }
+          rowData.push("");
+          row.appendChild(cell);
+        }
+        table.appendChild(row);
+        tableData.push(rowData);
+        
+      }
+
+      function updateCell(event) {
+        var rowIndex = event.target.parentNode.rowIndex - 1;
+        var columnIndex = event.target.cellIndex;
+        var value = event.target.textContent.trim();
+        updateData(rowIndex, columnIndex, value);
+      }
+
+      function updateData(row, col, value) {
+        tableData[row][col] = value;
+      }
+
+      function deleteRow(row) {
+        var table = document.getElementById("myTable");
+        table.deleteRow(row);
+        tableData.splice(row, 1);
+      }
+
+      function updateRow(row) {
+        var table = document.getElementById("myTable");
+        var rowData = tableData[row];
+        var cells = table.rows[row + 1].cells;
+        for (var i = 0; i < rowData.length; i++) {
+          var value = cells[i].textContent.trim();
+          rowData[i] = value;
+        }
+      }
+
+      function displayData() {
+        console.log(tableData);
+      }
+    </script>
+  </body>
+</html>
