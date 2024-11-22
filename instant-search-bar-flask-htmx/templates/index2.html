@@ -66,36 +66,19 @@
   <section class="section">
     <div class="columns">
       <div class="column is-one-third is-offset-one-third">
-        <input type="text" class="input" placeholder="Search" name="q" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#results">
-      </div>
-    </div>
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Performer</th>
-          <th>Peak Position</th>
-          <th>Time on Chart</th>
-          <th>Chart Debut</th>
-        </tr>
-      </thead>
-      <tbody id="results"></tbody>
-    </table>
-  </section>
-
-  <!-- <section class="section">
-    <div class="columns">
-      <div class="column is-one-third is-offset-one-third">
-        <input type="text" class="input" placeholder="Search" name="q" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#results2">
+        <input type="text" class="input" placeholder="Search" name="q" hx-get="/search2" hx-trigger="keyup changed delay:500ms" hx-target="#results">
       </div>
       <p></p>
     </div>
-    <table class="table is-fullwidth">
+    <!-- <table class="table is-fullwidth">
       <div class="dropdown">
-        <div id="myDropdown" class="dropdown-content" id="results2"></div>
+        <div id="myDropdown" class="dropdown-content" id="results"></div>
       </div>
-    </table>
-  </section> -->
+    </table> -->
+    <select id="results">
+      <option value="a1">A1</option>
+    </select>
+  </section>
 
   
 </body>
