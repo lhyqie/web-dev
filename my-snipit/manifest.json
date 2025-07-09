@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Area Screenshot",
+  "version": "1.0",
+  "description": "Take a screenshot of a selected area on the page by clicking and dragging.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "offscreen"
+  ],
+  "action": {
+    "default_title": "Take Area Screenshot"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
