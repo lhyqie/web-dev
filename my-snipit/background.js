@@ -1,3 +1,6 @@
+const SERVER_URL = 'https://json2tree.ap-southeast-2.dev.atl-paas.net';
+// const SERVER_URL = 'http://127.0.0.1:8080';
+
 // A function to check if an offscreen document is already active.
 async function hasOffscreenDocument(path) {
   const offscreenUrl = chrome.runtime.getURL(path);
@@ -61,20 +64,76 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
         <head>
           <title>Screenshot</title>
           <style>
-            body { margin: 0; background-color: #202124; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-            a { display: block; }
-            img { max-width: 100vw; max-height: 100vh; box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); }
+            body { 
+              margin: 0; 
+              background-color: white; 
+              display: flex; 
+              flex-direction: column;
+              justify-content: center; 
+              align-items: center; 
+              min-height: 100vh;
+              padding: 20px;
+            }
+            .url-link { 
+              color: blue; 
+              text-decoration: underline; 
+              margin-bottom: 20px;
+              font-family: Arial, sans-serif;
+              font-size: 14px;
+              word-break: break-all;
+            }
+            .image-container a { 
+              display: block; 
+            }
+            img { 
+              max-width: 100vw; 
+              max-height: 80vh; 
+              box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); 
+            }
           </style>
         </head>
         <body>
-          <a href="${url}" target="_blank" title="Click to open original page: ${url}">
-            <img src="${dataUrl}" alt="Captured from ${url}">
-          </a>
+          <a href="${url}" target="_blank" class="url-link">${url}</a>
+          <div class="image-container">
+            <a href="${url}" target="_blank" title="Click to open original page: ${url}">
+              <img src="${dataUrl}" alt="Captured from ${url}">
+            </a>
+          </div>
         </body>
       </html>
     `;
     const htmlDataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
-    await chrome.tabs.create({ url: htmlDataUrl });
+    
+    // Upload the file
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `screenshot-${timestamp}.html`;
+    
+    try {
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const formData = new FormData();
+      formData.append('file', blob, filename);
+
+      const response = await fetch(`${SERVER_URL}/screenshot/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const displayUrl = `${SERVER_URL}/screenshot/display?id=${data.id}`;
+        await chrome.tabs.create({ url: displayUrl });
+        console.log('Screenshot uploaded successfully');
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to upload screenshot:', response.status, response.statusText, errorText);
+        console.log('Opening fallback tab with data URL...');
+        await chrome.tabs.create({ url: htmlDataUrl });
+      }
+    } catch (error) {
+      console.error('Error uploading screenshot:', error);
+      await chrome.tabs.create({ url: htmlDataUrl });
+    }
+
     await chrome.offscreen.closeDocument();
   }
 });

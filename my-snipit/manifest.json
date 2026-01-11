@@ -6,12 +6,26 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "offscreen"
+    "offscreen",
+    "identity"
+  ],
+  "host_permissions": [
+      "*://*.atlassian.net/*",
+      "*://*.atlassian.com/*",
+      "*://*.atl-paas.net/*",
+      "http://127.0.0.1:8080/*"
   ],
   "action": {
     "default_title": "Take Area Screenshot"
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "web_accessible_resources": [
+    {
+        "resources": ["images/fullscreen.svg", "images/fullscreen-exit.svg"],
+        "matches": ["*://*.atlassian.net/*", "*://*.atlassian.com/*"]
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlbRkyHSX+vQUu1BTlO1tR41JD1EDg7G/ehOXHBXoP/85o3rwZPfTEn16yM9+McSjrS9VFlk88YztWz70RLkE9ChDGfeZY0Y+/BCiiFGfiFx4kt27hUAWM0BHYHkvugDPwo9oOsg+nOmXKgViXcYKRmEVIYiLKNjgapsTm7Z3i8E9OaR3OZU7TYBbOgWfefGU95sjLoUkRYwyAZfGQxfW8JdYplyFo0kQaCJbQJGmBlhI3EZ1Smo61kgtS9gJZwtpcicw/q9izWQ4SCaT2l6Grn5cWsG/4tVqCPkUYULoqaqcdzijsu5wSMAsnsl4/nrQT84lqVMJ6PxSWdbgwA2ByQIDAQAB"
 }
