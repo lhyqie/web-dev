@@ -1,7 +1,40 @@
 // This script runs in the offscreen document to handle canvas operations.
-chrome.runtime.onMessage.addListener(handleMessages);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  handleMessages(message, sendResponse);
+  return true; // Keep the channel open for async response
+});
 
-async function handleMessages(message) {
+async function handleMessages(message, sendResponse) {
+  // Handle copy-to-clipboard messages
+  if (message.type === 'copy-to-clipboard') {
+    try {
+      // Try using the Clipboard API
+      await navigator.clipboard.writeText(message.text);
+      console.log('Copied to clipboard via Clipboard API:', message.text);
+      sendResponse({ success: true });
+    } catch (err) {
+      console.error('Clipboard API failed, trying fallback:', err);
+      try {
+        // Fallback: use a textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = message.text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const success = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        console.log('Copied to clipboard via execCommand:', success, message.text);
+        sendResponse({ success: success });
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr);
+        sendResponse({ success: false, error: fallbackErr.message });
+      }
+    }
+    return;
+  }
+  
   // We only expect 'crop-image' messages.
   if (message.type !== 'crop-image') {
     return;

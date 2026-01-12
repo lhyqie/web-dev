@@ -1,5 +1,5 @@
-const SERVER_URL = 'https://json2tree.ap-southeast-2.dev.atl-paas.net';
-// const SERVER_URL = 'http://127.0.0.1:8080';
+// const SERVER_URL = 'https://json2tree.ap-southeast-2.dev.atl-paas.net';
+const SERVER_URL = 'http://127.0.0.1:8080';
 
 // A function to check if an offscreen document is already active.
 async function hasOffscreenDocument(path) {
@@ -57,6 +57,11 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
     // Message from the offscreen document with the cropped image and original URL.
     const { dataUrl, url } = request;
 
+    // Truncate URL for display if longer than 100 characters
+    const truncatedURL = url.length > 100 
+      ? url.substring(0, 50) + '...' + url.substring(url.length - 47)
+      : url;
+
     // Create an HTML page that displays the image as a clickable link.
     const htmlContent = `
       <!DOCTYPE html>
@@ -80,7 +85,6 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
               margin-bottom: 20px;
               font-family: Arial, sans-serif;
               font-size: 14px;
-              word-break: break-all;
             }
             .image-container a { 
               display: block; 
@@ -93,7 +97,7 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
           </style>
         </head>
         <body>
-          <a href="${url}" target="_blank" class="url-link">${url}</a>
+          <a href="${url}" target="_blank" class="url-link" title="${url}">${truncatedURL}</a>
           <div class="image-container">
             <a href="${url}" target="_blank" title="Click to open original page: ${url}">
               <img src="${dataUrl}" alt="Captured from ${url}">
@@ -121,6 +125,22 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
       if (response.ok) {
         const data = await response.json();
         const displayUrl = `${SERVER_URL}/screenshot/display?id=${data.id}`;
+        
+        // Ensure offscreen document exists for clipboard operation
+        if (!await hasOffscreenDocument('offscreen.html')) {
+          await chrome.offscreen.createDocument({
+            url: 'offscreen.html',
+            reasons: ['CLIPBOARD'],
+            justification: 'To copy URL to clipboard',
+          });
+        }
+        
+        // Copy display URL to clipboard via offscreen document
+        await chrome.runtime.sendMessage({
+          type: 'copy-to-clipboard',
+          text: 'go/screenshot/' + data.id
+        });
+        
         await chrome.tabs.create({ url: displayUrl });
         console.log('Screenshot uploaded successfully');
       } else {
@@ -133,7 +153,5 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
       console.error('Error uploading screenshot:', error);
       await chrome.tabs.create({ url: htmlDataUrl });
     }
-
-    await chrome.offscreen.closeDocument();
   }
 });
