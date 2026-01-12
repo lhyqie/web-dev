@@ -1,5 +1,51 @@
-// const SERVER_URL = 'https://json2tree.ap-southeast-2.dev.atl-paas.net';
-const SERVER_URL = 'http://127.0.0.1:8080';
+const SERVER_URL = 'https://json2tree.ap-southeast-2.dev.atl-paas.net';
+// const SERVER_URL = 'http://127.0.0.1:8080';
+
+// Create context menu on installation
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'take-screenshot',
+    title: 'Take Screenshot',
+    contexts: ['page', 'selection', 'link', 'image']
+  });
+  chrome.contextMenus.create({
+    id: 'take-screenshot-delayed',
+    title: 'Take Screenshot in 3 Seconds',
+    contexts: ['page', 'selection', 'link', 'image']
+  });
+});
+
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId === 'take-screenshot') {
+    // Inject the content script and CSS into the active tab.
+    await chrome.scripting.insertCSS({
+      target: { tabId: tab.id },
+      files: ['style.css'],
+    });
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content.js']
+    });
+  } else if (info.menuItemId === 'take-screenshot-delayed') {
+    // Inject the content script with delayed mode
+    await chrome.scripting.insertCSS({
+      target: { tabId: tab.id },
+      files: ['style.css'],
+    });
+    // Set config before loading content script
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        window.screenshotConfig = { delayedMode: true, delay: 3000 };
+      }
+    });
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content.js']
+    });
+  }
+});
 
 // A function to check if an offscreen document is already active.
 async function hasOffscreenDocument(path) {

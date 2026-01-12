@@ -1,9 +1,12 @@
-(() => {
+((config) => {
   // Avoid running the script multiple times on the same page
   if (window.hasRun) {
     return;
   }
   window.hasRun = true;
+
+  const delayedMode = config.delayedMode || false;
+  const delay = config.delay || 3000;
 
   let startX, startY;
   let isSelecting = false;
@@ -98,9 +101,41 @@
     }, 100);
   };
 
-  // Add all event listeners to the window.
-  window.addEventListener('mousedown', handleMouseDown);
-  window.addEventListener('mousemove', handleMouseMove);
-  window.addEventListener('mouseup', handleMouseUp);
-  window.addEventListener('keydown', handleKeyDown);
-})();
+  // Handle delayed mode
+  if (delayedMode) {
+    // Hide overlay immediately so content is visible
+    overlay.style.display = 'none';
+    
+    // Wait for the delay, then capture
+    setTimeout(() => {
+      const rect = {
+        left: window.scrollX,
+        top: window.scrollY,
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+      
+      chrome.runtime.sendMessage({
+        type: 'capture',
+        area: {
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height
+        },
+        dpr: window.devicePixelRatio
+      });
+      
+      cleanup();
+    }, delay);
+    
+    // Allow ESC to cancel
+    window.addEventListener('keydown', handleKeyDown);
+  } else {
+    // Add all event listeners to the window for normal mode.
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('keydown', handleKeyDown);
+  }
+})(window.screenshotConfig || {});

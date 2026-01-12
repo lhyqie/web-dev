@@ -1,14 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "Area Screenshot",
+  "name": "Atlassian Snipit",
   "version": "1.0",
-  "description": "Take a screenshot of a selected area on the page by clicking and dragging.",
+  "description": "Take a screenshot of a selected area on the page by clicking and dragging. Screenshot will be uploaded and a link to it is copied to your clipboard.",
   "permissions": [
     "activeTab",
     "scripting",
     "offscreen",
     "identity",
-    "clipboardWrite"
+    "clipboardWrite",
+    "contextMenus"
   ],
   "host_permissions": [
       "*://*.atlassian.net/*",
