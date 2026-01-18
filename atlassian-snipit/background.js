@@ -102,7 +102,15 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
   } else if (request.type === 'cropped-image') {
     // Message from the offscreen document with the cropped image and original URL.
     const { dataUrl, url } = request;
+    await chrome.storage.local.set({ screenshotDataUrl: dataUrl, originalUrl: url });
+    await chrome.tabs.create({ url: 'editor.html' });
+  } else if (request.type === 'upload-annotated-image') {
+    const { dataUrl, url } = request;
+    await uploadScreenshot(dataUrl, url);
+  }
+});
 
+async function uploadScreenshot(dataUrl, url) {
     // Truncate URL for display if longer than 100 characters
     const truncatedURL = url.length > 100 
       ? url.substring(0, 50) + '...' + url.substring(url.length - 47)
@@ -184,7 +192,7 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
         // Copy display URL to clipboard via offscreen document
         await chrome.runtime.sendMessage({
           type: 'copy-to-clipboard',
-          text: 'go/screenshot/' + data.id
+          text: 'http://go/screenshot/' + data.id
         });
         
         await chrome.tabs.create({ url: displayUrl });
@@ -199,5 +207,4 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
       console.error('Error uploading screenshot:', error);
       await chrome.tabs.create({ url: htmlDataUrl });
     }
-  }
-});
+}

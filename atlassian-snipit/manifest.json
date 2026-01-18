@@ -9,7 +9,8 @@
     "offscreen",
     "identity",
     "clipboardWrite",
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "host_permissions": [
       "*://*.atlassian.net/*",
@@ -18,7 +19,19 @@
       "http://127.0.0.1:8080/*"
   ],
   "action": {
-    "default_title": "Take Area Screenshot"
+    "default_title": "Click to Take Screenshot",
+    "default_icon": {
+      "16": "images/icon.png",
+      "32": "images/icon.png",
+      "48": "images/icon.png",
+      "128": "images/icon.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon.png",
+    "32": "images/icon.png",
+    "48": "images/icon.png",
+    "128": "images/icon.png"
   },
   "background": {
     "service_worker": "background.js"

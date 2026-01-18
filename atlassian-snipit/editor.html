@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Annotate Screenshot - Atlassian Snipit</title>
+    <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="tool-group">
+            <button class="tool-btn" data-tool="select" title="Select">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d='M18.799 9.957l-1.121-1.121a1 1 0 1 1 1.414-1.415l2.828 2.829a1 1 0 0 1 0 1.414l-2.828 2.828a1 1 0 0 1-1.414-1.414l1.121-1.121h-6.485v6.485l1.121-1.121a1 1 0 0 1 1.414 1.414l-2.828 2.829a1 1 0 0 1-1.414 0l-2.829-2.829a1 1 0 0 1 1.414-1.414l1.122 1.121v-6.485H3.828l1.122 1.121a1 1 0 0 1-1.414 1.414L.707 11.664a1 1 0 0 1 0-1.414L3.536 7.42A1 1 0 0 1 4.95 8.836l-1.122 1.12h6.486V3.473L9.192 4.593a1 1 0 0 1-1.414-1.414L10.607.35a1 1 0 0 1 1.414 0l2.828 2.829a1 1 0 1 1-1.414 1.414l-1.121-1.121v6.485h6.485z' /></svg>
+            </button>
+            <button class="tool-btn active" data-tool="arrow" title="Arrow">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M11 4v9h-3l4 8 4-8h-3v-9h-2z" transform="rotate(-45 12 12)"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="rect" title="Rectangle">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="ellipse" title="Ellipse">
+                <svg viewBox="0 0 24 24" width="24" height="24"><ellipse cx="12" cy="12" rx="9" ry="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="text" title="Text">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M5 4v3h5.5v12h3V7H19V4H5z"/></svg>
+            </button>
+        </div>
+        <div class="separator"></div>
+        <div class="tool-group">
+            <input type="color" id="color-picker" value="#FF0000" title="Color">
+            <input type="range" id="line-width" min="1" max="10" value="3" title="Line Width">
+            <select id="font-size" title="Font Size" style="display: none; height: 36px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="16">16px</option>
+                <option value="20">20px</option>
+                <option value="24" selected>24px</option>
+                <option value="32">32px</option>
+                <option value="48">48px</option>
+                <option value="64">64px</option>
+            </select>
+        </div>
+        <div class="separator"></div>
+        <div class="tool-group">
+            <button class="tool-btn" id="undo" title="Undo">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+            </button>
+            <button class="tool-btn" id="redo" title="Redo">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.4 10.6C16.55 9 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+            </button>
+        </div>
+        <div class="spacer"></div>
+        <div class="tool-group">
+            <button id="upload-btn" class="primary-btn">Upload</button>
+        </div>
+    </div>
+    
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Hidden text input for typing -->
+    <textarea id="text-input" style="display:none; position:absolute; background:transparent; border:1px dashed #000; color: red; font: 20px Arial; z-index: 100; padding: 0; outline: none; resize: none; overflow: hidden; white-space: pre;"></textarea>
+
+    <script src="editor.js"></script>
+</body>
+</html>

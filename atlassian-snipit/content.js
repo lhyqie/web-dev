@@ -98,7 +98,7 @@
       }
       // Clean up the UI and event listeners.
       cleanup();
-    }, 100);
+    }, 200);
   };
 
   // Handle delayed mode

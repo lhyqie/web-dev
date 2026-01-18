@@ -50,11 +50,13 @@ function cropImage(dataUrl, area, dpr, url) {
     const image = new Image();
     image.onload = () => {
       // Create a canvas that fits the cropped image only (no annotation bar)
-      const canvas = new OffscreenCanvas(area.width * dpr, area.height * dpr);
+      const width = Math.round(area.width * dpr);
+      const height = Math.round(area.height * dpr);
+      const canvas = new OffscreenCanvas(width, height);
       const ctx = canvas.getContext('2d');
 
       // Draw the cropped image portion
-      ctx.drawImage(image, area.x * dpr, area.y * dpr, area.width * dpr, area.height * dpr, 0, 0, area.width * dpr, area.height * dpr);
+      ctx.drawImage(image, area.x * dpr, area.y * dpr, area.width * dpr, area.height * dpr, 0, 0, width, height);
 
       // Convert the canvas to a Blob, then to a data URL.
       canvas.convertToBlob({ type: 'image/png' }).then(blob => {
