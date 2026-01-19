@@ -24,6 +24,7 @@ const fontSizeSelect = document.getElementById('font-size');
 const undoBtn = document.getElementById('undo');
 const redoBtn = document.getElementById('redo');
 const uploadBtn = document.getElementById('upload-btn');
+const viewAllBtn = document.getElementById('view-all-btn');
 const textInput = document.getElementById('text-input');
 
 // Initialize
@@ -137,6 +138,9 @@ function setupEventListeners() {
     });
 
     uploadBtn.addEventListener('click', uploadScreenshot);
+    viewAllBtn.addEventListener('click', () => {
+        window.open('https://go/screenshot', '_blank');
+    });
 
     // Canvas Mouse Events
     canvas.addEventListener('mousedown', handleMouseDown);

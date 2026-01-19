@@ -17,6 +17,12 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  const loggedIn = await checkLogin();
+  if (!loggedIn) {
+    chrome.tabs.create({ url: `${SERVER_URL}/login` });
+    return;
+  }
+
   if (info.menuItemId === 'take-screenshot') {
     // Inject the content script and CSS into the active tab.
     await chrome.scripting.insertCSS({
@@ -47,6 +53,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 });
 
+// A function to check if the user is logged in.
+async function checkLogin() {
+  try {
+    const response = await fetch(`${SERVER_URL}/login_user_info`);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
 // A function to check if an offscreen document is already active.
 async function hasOffscreenDocument(path) {
   const offscreenUrl = chrome.runtime.getURL(path);
@@ -59,6 +75,12 @@ async function hasOffscreenDocument(path) {
 
 // This is the main entry point. When the user clicks the extension's icon.
 chrome.action.onClicked.addListener(async (tab) => {
+  const loggedIn = await checkLogin();
+  if (!loggedIn) {
+    chrome.tabs.create({ url: `${SERVER_URL}/login` });
+    return;
+  }
+
   // Inject the content script and CSS into the active tab.
   await chrome.scripting.insertCSS({
     target: { tabId: tab.id },
@@ -116,50 +138,8 @@ async function uploadScreenshot(dataUrl, url) {
       ? url.substring(0, 50) + '...' + url.substring(url.length - 47)
       : url;
 
-    // Create an HTML page that displays the image as a clickable link.
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Screenshot</title>
-          <style>
-            body { 
-              margin: 0; 
-              background-color: white; 
-              display: flex; 
-              flex-direction: column;
-              justify-content: center; 
-              align-items: center; 
-              min-height: 100vh;
-              padding: 20px;
-            }
-            .url-link { 
-              color: blue; 
-              text-decoration: underline; 
-              margin-bottom: 20px;
-              font-family: Arial, sans-serif;
-              font-size: 14px;
-            }
-            .image-container a { 
-              display: block; 
-            }
-            img { 
-              max-width: 100vw; 
-              max-height: 80vh; 
-              box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); 
-            }
-          </style>
-        </head>
-        <body>
-          <a href="${url}" target="_blank" class="url-link" title="${url}">${truncatedURL}</a>
-          <div class="image-container">
-            <a href="${url}" target="_blank" title="Click to open original page: ${url}">
-              <img src="${dataUrl}" alt="Captured from ${url}">
-            </a>
-          </div>
-        </body>
-      </html>
-    `;
+    // Create simplified HTML content matching the server-side editing format
+    const htmlContent = `<div style="padding: 10px; background: #f5f5f5; border-bottom: 1px solid #ddd; font-family: -apple-system, sans-serif; text-align: center;"><a href="${url}" target="_blank" style="color: #0052cc; text-decoration: none; font-size: 14px;">${truncatedURL}</a></div><div style="text-align: center;"><img src="${dataUrl}" style="display: inline-block;"></div>`;
     const htmlDataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     
     // Upload the file
