@@ -124,8 +124,13 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
   } else if (request.type === 'cropped-image') {
     // Message from the offscreen document with the cropped image and original URL.
     const { dataUrl, url } = request;
-    await chrome.storage.local.set({ screenshotDataUrl: dataUrl, originalUrl: url });
-    await chrome.tabs.create({ url: 'editor.html' });
+
+    // Option 1: Open in editor tab
+    // await chrome.storage.local.set({ screenshotDataUrl: dataUrl, originalUrl: url });
+    // await chrome.tabs.create({ url: 'editor.html' });
+
+    // Option 2: Upload directly
+    await uploadScreenshot(dataUrl, url);
   } else if (request.type === 'upload-annotated-image') {
     const { dataUrl, url } = request;
     await uploadScreenshot(dataUrl, url);
